@@ -1,0 +1,47 @@
+version: "3.6"
+services:
+  service_php:
+    build:
+      context: ./.docker/php
+    working_dir: /app/phalconapi
+    restart: always
+    volumes:
+      - ./:/app
+      - ./.docker/php/mods/psr.ini:/etc/php/7.4/fpm/conf.d/20-psr.ini
+      - ./.docker/php/mods/phalcon.ini:/etc/php/7.4/fpm/conf.d/50-phalcon.ini
+      - ./.docker/php/mods/psr.ini:/etc/php/7.4/cli/conf.d/20-psr.ini
+      - ./.docker/php/mods/phalcon.ini:/etc/php/7.4/cli/conf.d/50-phalcon.ini
+    depends_on:
+      - service_mysql
+
+  service_nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - 8081:80
+    volumes:
+      - ./:/app
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./.docker/nginx/fastcgi.conf:/etc/nginx/fastcgi.conf
+      - ./.docker/nginx/fastcgi-php.conf:/etc/nginx/fastcgi-php.conf
+    depends_on:
+      - service_php
+
+  service_mysql:
+    image: mariadb
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=phalcon
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=toor
+      - MYSQL_ROOT_PASSWORD=toor
+    volumes:
+      - db_mysql_data:/var/lib/mysql/
+      - ./.docker/mysql/config:/etc/mysql/conf.d/
+
+volumes:
+  db_mysql_data:
