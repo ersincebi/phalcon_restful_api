@@ -5,7 +5,7 @@ Implementation of an API application using the Phalcon Framework [https://docs.p
 - Clone the project
 - In the project folder run `make all`
 - Hit the IP address with postman
-- database not loads the database file is under ./docker/mysql/phalcon.sql
+- if database not loads to the mysql, file is under ./docker/mysql/phalcon.sql
 
 ### Features
 ##### JWT Tokens
